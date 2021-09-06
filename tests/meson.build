@@ -10,7 +10,7 @@ s = '../source/'
 
 tests = []
 
-valgrind = find_program('valgrind')
+valgrind = find_program('valgrind', disabler: true)
 
 foreach t : tests
   exe = executable(t[0], t[1], include_directories: include, dependencies: t[2],
