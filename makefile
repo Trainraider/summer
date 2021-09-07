@@ -1,35 +1,47 @@
 # SPDX-License-Identifier: GPL-2.0-only
 
-# Just some shorthand calls to meson
+# Just some convenient scripts for working with meson/ninja
 
-.PHONY: compile install test fsan clean format
+RM = -yes | rm
 
-compile: | build
+ROOTCHECK = @echo;\
+	if [[ $EUID -ne 0 ]]; then\
+		echo "error: you cannot perform this operation unless you are root.";\
+		exit 1;\
+	fi
+
+.PHONY: compile install uninstall test fsan clean format
+
+compile: build
 	meson compile -C build $(ARGS)
 
-install: | release
+install: release
 	meson install -C release $(ARGS)
+
+uninstall: release
+	$(ROOTCHECK)
+	ninja -C release uninstall
 
 # Running plain `make` is sometimes required before testing.
 # select test suit: `make test ARGS='--suite O0'`
-test: | build
+test: build
 	-meson test -C build $(ARGS)
 	less +G build/meson-logs/testlog.txt
 
-fsan: | asan
+fsan: asan
 	meson compile -C asan
 
 clean:
-	-rm -r build
-	-rm -r release
-	-rm -r asan
+	$(RM) -r build
+	$(RM) -r release
+	$(RM) -r asan
 
 clean-full:
-	-rm -r build
-	-rm -r release
-	-rm -r asan
-	-rm -r subprojects/testing
-	-rm -r subprojects/types
+	$(RM) -r build
+	$(RM) -r release
+	$(RM) -r asan
+	$(RM) -r subprojects/testing
+	$(RM) -r subprojects/types
 
 build:
 	meson setup build --buildtype=debug
@@ -42,6 +54,6 @@ asan:
 	CFLAGS=-fsanitize=address,undefined LDFLAGS=-fsanitize=address,undefined\
 		meson setup asan --buildtype=debug
 
-format: | build
+format: build
 	ninja -C build clang-format
 
