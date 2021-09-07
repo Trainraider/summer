@@ -14,7 +14,7 @@ tests = []
 # the 2nd is a list of link_args. 3rd element is whether valgrind is
 # appropriate. Element 4: name suffix. Every test needs a unique name. Each 
 # element of builds will create a seperate test build.
-builds = [[['-O0'],[], true, 'O0'],
+builds = [[['-O0'],[], true, ''],
           [['-O1'],[], true, 'O1'],
           [['-O2'],[], true, 'O2'],
           [['-O3'],[], true, 'O3'],
