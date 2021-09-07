@@ -1,4 +1,4 @@
-# Meson Lib Template
+# Meson Template
 The project serves as a pre-made template for CLI utility development. It's 
 configured to use werror by default for robust code, and generate useful unit
 tests that run through both Valgrind and fsanitize to help catch memory bugs and
