@@ -5,11 +5,14 @@
 #include <argp.h>
 #include <stdbool.h>
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
 extern struct argp argp;
 
 typedef struct argdata {
         UI64M sumto;
-        IM nthreads;
+        IM    nthreads;
 } argdata;
+
+#pragma GCC diagnostic pop

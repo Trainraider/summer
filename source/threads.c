@@ -3,56 +3,56 @@
 
 #define _GNU_SOURCE
 
-#include "args.h"
 #include "threads.h"
+#include "args.h"
 #include <argp.h>
-#include <sched.h>
 #include <inttypes.h>
 #include <pthread.h>
+#include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 typedef struct thjob {
-        int     t_no;
-        uint64_t start;
-        uint64_t end;
+        UI64M start;
+        UI64M end;
+        UI64M ret_sum;
+        IM    t_no;
 } thjob;
 
-void* sum_numbers(void* arg)
+VM* sum_numbers(VM* arg)
 {
-        thjob*    job = arg;
-        pthread_t id  = pthread_self();
+        thjob* job = arg;
 
-        uint64_t  start = job->start;
-        uint64_t  end   = job->end;
-        uint64_t* sum   = malloc(sizeof(int64_t));
-        *sum           = 0;
+        UI64  start = job->start;
+        UI64  end   = job->end;
+        UI64M sum   = 0;
 
-        for (uint64_t i = start; i <= end; i++) {
-                *sum += i;
+        for (UI64M i = start; i <= end; i++) {
+                sum += i;
         }
-        return sum;
+        job->ret_sum = sum;
+        return arg;
 }
 
 int main(int argc, char** argv)
 {
         argdata data;
         argp_parse(&argp, argc, argv, 0, 0, &data);
-        
-        I nt = data.nthreads;
-        uint64_t sumto = data.sumto;
-        pthread_t* tid = malloc(nt * sizeof (pthread_t));
+
+        I              nt    = data.nthreads;
+        UI64           sumto = data.sumto;
+        pthread_t*     tid   = calloc(nt, sizeof(pthread_t));
         pthread_attr_t attr;
         pthread_attr_init(&attr);
 
-        uint64_t jobsize = sumto / nt;
-        uint64_t jobrm   = sumto % nt;
+        UI64 jobsize = sumto / nt;
+        UI64 jobrm   = sumto % nt;
 
-        int   err;
-        thjob* job = malloc(nt * sizeof (thjob));
-        for (int i = 0; i < nt; i++) {
+        IM     err;
+        thjob* job = calloc(nt, sizeof(thjob));
+        for (IM i = 0; i < nt; i++) {
                 job[i].t_no  = i;
                 job[i].start = jobsize * i + 1;
                 job[i].end   = jobsize * (i + 1);
@@ -66,12 +66,11 @@ int main(int argc, char** argv)
                         exit(1);
                 }
         }
-        uint64_t  sum = 0;
-        uint64_t* psum;
-        for (int i = 0; i < nt; i++) {
-                pthread_join(tid[i], (void**)&psum);
-                sum += *psum;
-                free(psum);
+        UI64M  sum = 0;
+        thjob* psum;
+        for (IM i = 0; i < nt; i++) {
+                pthread_join(tid[i], (VM**)&psum);
+                sum += psum->ret_sum;
         }
         printf("Sum: %" PRIu64 "\n", sum);
         pthread_attr_destroy(&attr);
@@ -81,7 +80,7 @@ int main(int argc, char** argv)
         return 0;
 }
 
-int nthreads()
+IM nthreads()
 {
         cpu_set_t cs;
         CPU_ZERO(&cs);
