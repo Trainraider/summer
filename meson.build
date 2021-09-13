@@ -1,17 +1,18 @@
 # SPDX-License-Identifier: GPL-2.0-only
 # Full license at https://spdx.org/licenses/GPL-2.0.html
 
-project('template', 'c',
+project('summer', 'c',
   version : '0.0',
   license : 'GPL-2.0-only',
   default_options : ['warning_level=3',
                      'werror=true'])
 email = '<trainraider7@gmail.com>'
-description = 'Prints Hello world'
+description = 'Threaded toy program that adds up numbers'
 include = include_directories(['include'])
 
 types_dep = dependency('types', fallback: ['types', 'types_dep'])
 testing_dep = dependency('testing', fallback: ['testing', 'testing_dep'])
+threads_dep = dependency('threads')
 
 subdir('source')
 subdir('tests')

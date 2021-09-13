@@ -10,5 +10,6 @@
 extern struct argp argp;
 
 typedef struct argdata {
-        bool verbose;
+        UI64M sumto;
+        IM nthreads;
 } argdata;
